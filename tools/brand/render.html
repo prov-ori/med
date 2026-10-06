@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@500;600;700&family=Manrope:wght@800&family=JetBrains+Mono:wght@600;700&display=swap">
+<style>
+  /* Фирменные цвета: хирургический зелёный и коралловый «пульс». */
+  :root { --teal: #0a7564; --teal-d: #063d35; --teal-dd: #04241f; --coral: #ff5a5f; --mint: #4fd0b3; --paper: #edf3f1; }
+  html, body { margin: 0; background: transparent; }
+  .og { width: 1200px; height: 630px; box-sizing: border-box; position: relative; overflow: hidden; color: #fff;
+        background: radial-gradient(900px 600px at 0% 0%, #0d8f7a 0%, var(--teal) 30%, var(--teal-d) 75%, var(--teal-dd) 100%);
+        font-family: 'Onest', system-ui, sans-serif; }
+  .grid { position: absolute; inset: 0; opacity: .14;
+          background-image: linear-gradient(rgba(255,255,255,.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.5) 1px, transparent 1px),
+                            linear-gradient(rgba(255,255,255,.25) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.25) 1px, transparent 1px);
+          background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px; }
+  .text { position: absolute; left: 70px; top: 62px; width: 640px; display: flex; flex-direction: column; gap: 26px; }
+  .brandrow { display: flex; align-items: center; gap: 22px; }
+  .brandrow svg { width: 112px; height: 112px; filter: drop-shadow(0 10px 24px rgba(0,0,0,.3)); }
+  .word { font: 800 84px/1 'Manrope', sans-serif; letter-spacing: -0.03em; }
+  h1 { margin: 0; font: 700 54px/1.1 'Onest', sans-serif; letter-spacing: -0.015em; }
+  h1 em { font-style: normal; color: #ffd2d3; }
+  .facts { display: flex; flex-wrap: wrap; gap: 10px; }
+  .facts b { font: 600 20px 'Onest', sans-serif; padding: 9px 16px; border-radius: 999px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.28); }
+  .mon { position: absolute; right: 56px; top: 86px; width: 410px; height: 458px; border-radius: 30px; background: #030b0a;
+         border: 1px solid rgba(79,208,179,.35); box-shadow: 0 30px 70px rgba(0,0,0,.45); padding: 22px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px; }
+  .mon-top { display: flex; justify-content: space-between; font: 700 15px 'JetBrains Mono', monospace; letter-spacing: .08em; color: #5f8f84; }
+  .mon-top span:last-child { color: var(--coral); }
+  .vit { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .vit div { border-radius: 14px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); padding: 10px 14px; display: flex; flex-direction: column; }
+  .vit small { font: 600 13px 'JetBrains Mono', monospace; opacity: .75; }
+  .vit b { font: 700 40px/1.1 'JetBrains Mono', monospace; }
+  .mark-only { width: var(--s); height: var(--s); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+  const params = new URLSearchParams(location.search);
+  const mode = params.get('mode') || 'og';
+  const size = +(params.get('size') || 512);
+
+  // Знак: скруглённый квадрат, белый медицинский крест, коралловая линия ЭКГ поперёк.
+  // simple=1 — версия для 16–32 px: толще линии, без мелких зубцов.
+  function mark(simple) {
+    const lw = simple ? 46 : 30;
+    const trace = simple
+      ? 'M40,262 L170,262 L212,118 L262,402 L300,262 L472,262'
+      : 'M36,262 L128,262 C140,262 146,236 158,236 C170,236 176,262 188,262 L206,262 L226,108 L262,412 L292,232 L306,262 L344,262 C358,262 366,224 384,224 C402,224 410,262 424,262 L476,262';
+    return `<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#11a184"/><stop offset=".55" stop-color="#0a7564"/><stop offset="1" stop-color="#065247"/></linearGradient></defs>
+      <rect x="8" y="8" width="496" height="496" rx="${simple ? 96 : 118}" fill="url(#g)"/>
+      <path d="M210,84 h92 a20,20 0 0 1 20,20 v106 h106 a20,20 0 0 1 20,20 v92 a20,20 0 0 1 -20,20 h-106 v106 a20,20 0 0 1 -20,20 h-92 a20,20 0 0 1 -20,-20 v-106 h-106 a20,20 0 0 1 -20,-20 v-92 a20,20 0 0 1 20,-20 h106 v-106 a20,20 0 0 1 20,-20 z" fill="#fff"/>
+      <path d="${trace}" fill="none" stroke="#0a7564" stroke-width="${lw + 22}" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+      <path d="${trace}" fill="none" stroke="#ff5a5f" stroke-width="${lw}" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
+  }
+
+  const root = document.getElementById('root');
+  if (mode === 'og') {
+    root.innerHTML = `<div class="og"><div class="grid"></div>
+      <div class="text">
+        <div class="brandrow">${mark(false)}<span class="word">Пульс</span></div>
+        <h1>Медицина<br>от гимназии <em>до врача</em></h1>
+        <div class="facts"><b>Уроки с тестами</b><b>Клинические случаи</b><b>Симулятор реанимации</b><b>ЭКГ и анализы</b><b>Анатомия</b></div>
+      </div>
+      <div class="mon">
+        <div class="mon-top"><span>ОТВЕДЕНИЕ II</span><span>● LIVE</span></div>
+        <canvas id="ecg" width="366" height="180" style="width:366px;height:180px"></canvas>
+        <div class="vit">
+          <div style="color:#3ef0a0"><small>ЧСС</small><b>72</b></div>
+          <div style="color:#56c8ff"><small>SpO₂ %</small><b>98</b></div>
+          <div style="color:#ff9a6a"><small>АД</small><b>118/76</b></div>
+          <div style="color:#f5e26b"><small>ЧДД</small><b>14</b></div>
+        </div>
+      </div></div>`;
+    // Линия ЭКГ — тем же движком, что и на сайте
+    const s = document.createElement('script');
+    s.src = '../../assets/js/ecg-engine.js';
+    window.MED = {};
+    s.onload = () => {
+      const c = document.getElementById('ecg'), ctx = c.getContext('2d');
+      const dpr = 2; c.width = 366 * dpr; c.height = 180 * dpr; ctx.scale(dpr, dpr);
+      const strip = MED.ecg.build('sinus', { seed: 'og-pulse', rate: 72, duration: 5 });
+      ctx.strokeStyle = '#3ef0a0'; ctx.lineWidth = 2.6; ctx.lineJoin = 'round'; ctx.beginPath();
+      for (let x = 0; x <= 366; x += 0.5) { const y = 112 - MED.ecg.value(strip, 0.35 + x / 366 * 3.6) * 70; x ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+      ctx.stroke();
+      document.body.dataset.ready = '1';
+    };
+    document.head.appendChild(s);
+  } else {
+    root.innerHTML = `<div class="mark-only" style="--s:${size}px">${mark(size <= 48)}</div>`;
+    document.body.dataset.ready = '1';
+  }
+</script>
+</body>
+</html>

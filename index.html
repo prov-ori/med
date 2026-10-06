@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Пульс — медицина от гимназии до врача</title>
+<meta name="description" content="Интерактивная платформа для изучения медицины на русском: от школьной биологии до работы врача. Уроки с тестами, клинические случаи, реанимационный симулятор, тренажёры ЭКГ, анализов и анатомии, калькуляторы и справочники.">
+<meta name="theme-color" content="#0a7564">
+<link rel="canonical" href="https://prov-ori.github.io/med/">
+<!-- Иконки -->
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<!-- Превью при отправке ссылки: Open Graph (Telegram, WhatsApp, VK, Facebook, LinkedIn, Discord, Slack) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Пульс">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:url" content="https://prov-ori.github.io/med/">
+<meta property="og:title" content="Пульс — медицина от гимназии до врача">
+<meta property="og:description" content="Уроки с тестами от клетки до реанимации, клинические случаи, симулятор неотложных состояний, тренажёры ЭКГ, анализов и анатомии. Бесплатно и на русском.">
+<meta property="og:image" content="https://prov-ori.github.io/med/assets/img/og-image.png">
+<meta property="og:image:secure_url" content="https://prov-ori.github.io/med/assets/img/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Логотип «Пульс» — белый медицинский крест с линией ЭКГ на зелёном фоне — и надпись «Медицина от гимназии до врача»">
+<meta property="vk:image" content="https://prov-ori.github.io/med/assets/img/og-image.png">
+<!-- X (Twitter) -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Пульс — медицина от гимназии до врача">
+<meta name="twitter:description" content="Уроки, клинические случаи, реанимационный симулятор, тренажёры ЭКГ и анализов — интерактивная медицина на русском.">
+<meta name="twitter:image" content="https://prov-ori.github.io/med/assets/img/og-image.png">
+<meta name="twitter:image:alt" content="Логотип «Пульс» и надпись «Медицина от гимназии до врача»">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Manrope:wght@700;800&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=JetBrains+Mono:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<!--APP-START-->
+<div class="app" id="app">
+  <aside class="sidebar" id="sidebar" aria-label="Навигация">
+    <a class="brand" href="#/">
+      <img class="brand-mark" src="assets/img/icon-192.png" width="34" height="34" alt="">
+      <span class="brand-text">Пульс<small>медицина от гимназии до врача</small></span>
+    </a>
+    <button class="icon-btn side-close" id="sideClose" type="button" aria-label="Закрыть меню"></button>
+    <nav class="nav" id="nav"></nav>
+  </aside>
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn menu-btn" id="menuBtn" aria-label="Открыть меню" type="button"></button>
+      <button class="search-trigger" id="searchBtn" type="button">
+        <span class="search-ico" aria-hidden="true"></span>
+        <span>Поиск по платформе</span>
+        <kbd>Ctrl K</kbd>
+      </button>
+      <div class="topbar-right">
+        <a class="xp-chip" id="xpChip" href="#/achievements" title="Ваш ранг и опыт"></a>
+        <button class="icon-btn" id="themeBtn" type="button" aria-label="Сменить тему"></button>
+      </div>
+    </header>
+    <main class="view" id="view" tabindex="-1"></main>
+    <footer class="foot">
+      Учебный ресурс. Не заменяет консультацию врача и действующие клинические рекомендации.
+      При угрозе жизни звоните <b>112</b>.
+    </footer>
+  </div>
+</div>
+<div class="scrim" id="scrim" hidden></div>
+<div class="modal" id="searchModal" hidden role="dialog" aria-modal="true" aria-label="Поиск">
+  <div class="modal-box search-box">
+    <div class="search-head">
+      <input id="searchInput" type="search" placeholder="Болезнь, препарат, термин, анализ, ЭКГ…" autocomplete="off" aria-label="Поиск">
+      <button class="icon-btn" id="searchClose" type="button" aria-label="Закрыть поиск"></button>
+    </div>
+    <div id="searchResults" class="search-results"></div>
+  </div>
+</div>
+<div class="popover" id="termPop" hidden role="tooltip"></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<!--APP-END-->
+
+<!--SCRIPTS-START-->
+<script src="assets/js/core.js"></script>
+<script src="assets/js/ecg-engine.js"></script>
+<script src="data/curriculum-0.js"></script>
+<script src="data/curriculum-1.js"></script>
+<script src="data/curriculum-2.js"></script>
+<script src="data/curriculum-3.js"></script>
+<script src="data/curriculum-4a.js"></script>
+<script src="data/curriculum-4b.js"></script>
+<script src="data/curriculum-5.js"></script>
+<script src="data/glossary.js"></script>
+<script src="data/diseases.js"></script>
+<script src="data/drugs.js"></script>
+<script src="data/labs.js"></script>
+<script src="data/organs.js"></script>
+<script src="data/roots.js"></script>
+<script src="data/riddles.js"></script>
+<script src="data/sims.js"></script>
+<script src="data/cases.js"></script>
+<script src="data/timeline.js"></script>
+<script src="data/mnemonics.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/views/home.js"></script>
+<script src="assets/js/views/learn.js"></script>
+<script src="assets/js/views/cases.js"></script>
+<script src="assets/js/views/practice.js"></script>
+<script src="assets/js/views/ecg.js"></script>
+<script src="assets/js/views/sim.js"></script>
+<script src="assets/js/views/labs.js"></script>
+<script src="assets/js/views/anatomy.js"></script>
+<script src="assets/js/views/calc.js"></script>
+<script src="assets/js/views/games.js"></script>
+<script src="assets/js/views/reference.js"></script>
+<script src="assets/js/views/profile.js"></script>
+<script src="assets/js/app.js"></script>
+<!--SCRIPTS-END-->
+</body>
+</html>
