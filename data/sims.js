@@ -280,10 +280,10 @@
     init: { hr: 124, sbp: 84, dbp: 46, spo2: 88, rr: 28, gcs: 14, temp: 39.2, lactate: 4.2, inf: 1, vol: 1, nor: 0, fluidL: 0, rhythm: 'sinus-tachy' },
     tick(st, dt, sim) {
       const abx = sim.did('abx');
-      st.inf += (abx !== undefined && sim.t - abx > 120 ? -0.0011 : 0.00045) * dt;
+      st.inf += (abx !== undefined && sim.t - abx > 120 ? -0.0011 : 0.0007) * dt;
       st.inf = Math.max(0.2, st.inf);
       const over = Math.max(0, -st.vol);
-      const tS = 128 - 30 * st.inf - 34 * Math.max(0, st.vol) + 28 * st.nor - 6 * over;
+      const tS = 120 - 18 * st.inf - 22 * Math.max(0, st.vol) + 28 * st.nor - 6 * over;
       near(st, 'sbp', tS, 40, dt); near(st, 'dbp', tS * 0.55, 40, dt);
       near(st, 'hr', 76 + 34 * st.inf + 20 * Math.max(0, st.vol), 40, dt);
       near(st, 'spo2', Math.min(99, 96 - 7 * st.inf + (sim.flags.o2 ? 6 : 0) - 14 * over), 30, dt);
@@ -294,7 +294,7 @@
       st.rhythm = st.hr > 100 ? 'sinus-tachy' : 'sinus';
       crit(sim, map(st) < 50 || st.spo2 < 75, dt);
     },
-    dead: (st, sim) => sim.flags.crit > 60 || st.inf > 1.9,
+    dead: (st, sim) => sim.flags.crit > 90 || st.inf > 1.9,
     deathText: 'Прогрессирующий шок с полиорганной недостаточностью — остановка кровообращения.',
     goal: (st, sim) => map(st) >= 65 && st.spo2 >= 92 && sim.did('abx') !== undefined && st.lactate < 3,
     limit: 1500,
@@ -506,7 +506,7 @@
     init: { hr: 52, sbp: 148, dbp: 86, spo2: 95, rr: 18, gcs: 15, k: 7.4, ca: 0, shift: 0, glucose: 6.2, gIn: 0, rhythm: 'hyperk' },
     tick(st, dt, sim) {
       // Калий медленно растёт (катаболизм, нет выведения)
-      st.k += 0.00025 * dt;
+      st.k += 0.0004 * dt;
       if (st.shift > 0) { const d = Math.min(st.shift, dt * 0.0045); st.k -= d; st.shift -= d; }
       if (sim.flags.dialysis && sim.t - sim.did('dial') > 120) st.k -= 0.0035 * dt;
       st.k = Math.max(4, st.k);
