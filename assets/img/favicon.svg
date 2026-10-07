@@ -1,0 +1,7 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#11a184"></stop><stop offset=".55" stop-color="#0a7564"></stop><stop offset="1" stop-color="#065247"></stop></linearGradient></defs>
+      <rect x="8" y="8" width="496" height="496" rx="118" fill="url(#g)"></rect>
+      <path d="M210,84 h92 a20,20 0 0 1 20,20 v106 h106 a20,20 0 0 1 20,20 v92 a20,20 0 0 1 -20,20 h-106 v106 a20,20 0 0 1 -20,20 h-92 a20,20 0 0 1 -20,-20 v-106 h-106 a20,20 0 0 1 -20,-20 v-92 a20,20 0 0 1 20,-20 h106 v-106 a20,20 0 0 1 20,-20 z" fill="#fff"></path>
+      <path d="M36,262 L128,262 C140,262 146,236 158,236 C170,236 176,262 188,262 L206,262 L226,108 L262,412 L292,232 L306,262 L344,262 C358,262 366,224 384,224 C402,224 410,262 424,262 L476,262" fill="none" stroke="#0a7564" stroke-width="52" stroke-linecap="round" stroke-linejoin="round" opacity="0"></path>
+      <path d="M36,262 L128,262 C140,262 146,236 158,236 C170,236 176,262 188,262 L206,262 L226,108 L262,412 L292,232 L306,262 L344,262 C358,262 366,224 384,224 C402,224 410,262 424,262 L476,262" fill="none" stroke="#ff5a5f" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>
