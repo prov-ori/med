@@ -51,9 +51,26 @@ MED.cases.forEach(c => {
 MED.sims.forEach(s => (s.links || []).forEach(x => { if (!lessonIds.has(x)) err(`Симулятор ${s.id}: нет урока ${x}`); }));
 MED.labCases.forEach(c => c.panel.forEach(([id]) => { if (!MED.labs.some(l => l.id === id)) err(`Анализ ${c.id}: нет показателя ${id}`); }));
 MED.termTasks.forEach(([d, parts]) => parts.forEach(p => { if (!MED.roots.some(r => r.id === p)) err(`Термин «${d}»: нет корня ${p}`); }));
+// Дубликаты id и терминов во всех справочниках (контент разнесён по нескольким файлам)
+const dupCheck = (arr, key, name) => { const seen = new Set(); (arr || []).forEach(x => { const k = String(key(x)).toLowerCase(); if (seen.has(k)) err(`Дубликат ${name}: ${k}`); seen.add(k); }); };
+dupCheck(MED.glossary, t => t.term, 'термина');
+dupCheck(MED.diseases, d => d.id, 'болезни');
+dupCheck(MED.drugs, d => d.id, 'препарата');
+dupCheck(MED.cases, c => c.id, 'случая');
+dupCheck(MED.sims, s => s.id, 'сценария');
+dupCheck(MED.riddles, r => r.id, 'загадки');
+dupCheck(MED.labs, l => l.id, 'показателя');
+dupCheck(MED.labCases, l => l.id, 'задачи по анализам');
+dupCheck(MED.mnemonics, m => m.id || m.title, 'мнемоники');
+dupCheck(MED.myths, m => m.id, 'мифа');
+dupCheck(MED.triage, m => m.id, 'пациента сортировки');
+(MED.pairSets || []).forEach(ps => { dupCheck(ps.pairs, p => p[0], 'пары в наборе ' + ps.id); if (ps.pairs.length < 8) err(`Набор пар ${ps.id}: меньше 8 пар`); });
+(MED.triage || []).forEach(t => { if (![1, 2, 3, 4, 5].includes(t.level)) err(`Сортировка ${t.id}: уровень вне 1–5`); });
+(MED.myths || []).forEach(m => { if (typeof m.truth !== 'boolean') err(`Миф ${m.id}: нет truth`); });
 // ECG-канвасы
 for (const m of allText.matchAll(/data-ecg="([^"]+)"/g)) if (!MED.ecg.rhythm(m[1])) err('Нет ритма ЭКГ ' + m[1]);
 
+console.log(`Мифов ${(MED.myths || []).length}, сортировка ${(MED.triage || []).length}, наборов пар ${(MED.pairSets || []).length}, мнемоник ${MED.mnemonics.length}`);
 console.log(`Уроков ${lessons.length}, вопросов ${qn}, случаев ${MED.cases.length}, сценариев ${MED.sims.length}, терминов ${MED.glossary.length}, болезней ${MED.diseases.length}, препаратов ${MED.drugs.length}, анализов ${MED.labs.length}/${MED.labCases.length}, загадок ${MED.riddles.length}, ритмов ${MED.ecg.RHYTHMS.length}`);
 if (errors.length) { console.log(errors.join('\n')); process.exit(1); }
 console.log('OK');

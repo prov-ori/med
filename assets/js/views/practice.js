@@ -220,6 +220,7 @@
       tick(); timer = setInterval(tick, 1000);
     }
     function show() {
+      if (!document.body.contains(slot)) { clearInterval(timer); return; } // ушли со страницы экзамена
       if (i >= pool.length) return finish();
       el.querySelector('#prog').textContent = `Вопрос ${i + 1} из ${pool.length}`;
       slot.innerHTML = '';

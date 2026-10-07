@@ -627,7 +627,8 @@ tr:last-child td { border-bottom: 0; }
 /* Выбор трека */
 .track-pick { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 20px; align-items: center; }
 .track-pick h2 { margin: 4px 0 6px; }
-.tracks { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+.tracks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 480px) { .tracks { grid-template-columns: 1fr; } }
 .track { text-align: left; border: 1px solid var(--line); background: var(--bg); border-radius: 12px; padding: 12px 14px; cursor: pointer; display: flex; flex-direction: column; gap: 4px; font: inherit; color: var(--ink); }
 .track:hover { border-color: var(--accent); }
 .track span { font-size: 13px; color: var(--ink-3); }
@@ -650,7 +651,9 @@ tr:last-child td { border-bottom: 0; }
 .sim-left { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
 .sim-right { display: flex; flex-direction: column; gap: 12px; position: sticky; top: 72px; max-height: calc(100vh - 90px); overflow-y: auto; padding-right: 2px; }
 .mon-sim canvas { height: 210px; }
-.sim.paused .mon { opacity: .6; }
+.mon-sim { position: relative; }
+.sim.paused .mon canvas, .sim.paused .mon-vitals { opacity: .55; }
+.mon-start { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); box-shadow: 0 8px 24px rgba(0,0,0,.4); white-space: nowrap; }
 .sim-busy { background: var(--surface); border: 1px solid var(--accent); border-radius: 12px; padding: 10px 14px; display: flex; flex-direction: column; gap: 6px; font-weight: 600; font-size: 14px; }
 .sim-log { max-height: 340px; overflow-y: auto; padding: 10px 14px; display: flex; flex-direction: column; gap: 2px; }
 .log-item { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 8px; padding: 6px 0; border-bottom: 1px dashed var(--line); font-size: 14px; line-height: 1.45; }
@@ -679,7 +682,18 @@ tr:last-child td { border-bottom: 0; }
 .checklist .harm { color: var(--bad); }
 .checklist .harm > span { background: var(--bad); color: #fff; }
 .sim-debrief { margin-top: 18px; max-width: 900px; }
-@media (max-width: 900px) { .sim { grid-template-columns: 1fr; } .sim-right { position: static; max-height: none; } }
+@media (max-width: 900px) {
+  .sim { grid-template-columns: 1fr; }
+  .sim-right { position: static; max-height: none; }
+  /* На телефоне монитор прилипает к верху, а действия идут сразу под ним: витальные видны, пока листаете кнопки. */
+  .sim-left { display: contents; }
+  .sim-intro { order: 0; }
+  .mon-sim { order: 1; position: sticky; top: 64px; z-index: 5; }
+  .mon-sim canvas { height: 120px; }
+  .sim-busy { order: 2; position: sticky; top: 300px; z-index: 4; }
+  .sim-right { order: 3; }
+  .sim-log { order: 4; }
+}
 
 /* Анализы */
 .lab-sheet { display: flex; flex-direction: column; gap: 14px; }
@@ -770,3 +784,40 @@ tr:last-child td { border-bottom: 0; }
 
 /* Справочник болезней */
 .red-flags li { color: var(--bad); }
+
+/* ---------- Игры: миф или факт, сортировка, пары ---------- */
+.myth-text { font: 600 clamp(19px, 2.4vw, 24px)/1.35 var(--f-read); margin: 14px 0 18px; }
+.myth-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.myth-btn { justify-content: center; padding: 14px; font-size: 16px; }
+.myth-btn svg { width: 18px; height: 18px; }
+.myth-btn.is-correct { border-color: var(--ok); background: var(--ok-soft); }
+.myth-btn.is-wrong { border-color: var(--bad); background: var(--bad-soft); }
+.myth-review { display: flex; flex-direction: column; gap: 10px; }
+.myth-review p { margin: 0 0 4px; }
+.triage-text { font-size: 17px; margin: 12px 0 8px; }
+.triage-vitals { font-size: 14px; padding: 8px 12px; border-radius: 10px; background: var(--mon-bg); color: #9ff3cf; margin-bottom: 16px; overflow-wrap: anywhere; }
+.triage-btns { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.tr-btn { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 6px; border-radius: 12px; border: 2px solid transparent; cursor: pointer; font: inherit; color: #fff; text-align: center; }
+.tr-btn b { font-size: 22px; line-height: 1; }
+.tr-btn span { font-size: 13px; font-weight: 600; }
+.tr-btn small { font-size: 11px; opacity: .85; }
+.tr-1 { background: #c62f35; } .tr-2 { background: #e0742a; } .tr-3 { background: #e9b82b; color: #2b2100; }
+.tr-4 { background: #2f9a5a; } .tr-5 { background: #2f6fb8; }
+.tr-btn:disabled { opacity: .35; cursor: default; }
+.tr-btn.is-correct, .tr-btn.is-wrong { opacity: 1; }
+.tr-btn.is-correct { border-color: var(--ink); box-shadow: 0 0 0 3px var(--ok); }
+.tr-btn.is-wrong { box-shadow: 0 0 0 3px var(--bad); }
+@media (max-width: 560px) { .triage-btns { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; } .tr-btn span { font-size: 10.5px; } .tr-btn small { display: none; } }
+.pairs { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; margin-top: 12px; }
+.pairs-col { display: flex; flex-direction: column; gap: 8px; }
+.pair { overflow-wrap: anywhere; hyphens: auto; text-align: left; font: inherit; font-size: 14.5px; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; min-height: 48px; transition: border-color .15s, background .15s; }
+.pair:hover:not(:disabled) { border-color: var(--accent); }
+.pair.on { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 2px var(--accent); }
+.pair.is-correct { border-color: var(--ok); background: var(--ok-soft); color: var(--ink-3); cursor: default; }
+.pair.is-wrong { border-color: var(--bad); background: var(--bad-soft); }
+.myth #fb:not(:empty), .triage-card #fb:not(:empty) { margin-top: 14px; }
+.myth-btn:disabled { opacity: .4; }
+.myth-btn.is-correct, .myth-btn.is-wrong { opacity: 1; }
+/* Длинные классы препаратов («Моноклональное антитело к ФНО-α…») должны переноситься, а не распирать страницу на телефоне */
+.tag { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+@media (max-width: 420px) { .pairs { gap: 6px; } .pair { font-size: 13px; padding: 9px 8px; } }

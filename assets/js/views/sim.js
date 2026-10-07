@@ -43,7 +43,7 @@
 
     const st = Object.assign({ temp: 36.8, gcs: 15, glucose: 5.5, rhythm: 'sinus' }, JSON.parse(JSON.stringify(sc.init)));
     const sim = {
-      t: 0, st, flags: {}, history: [], busy: null, paused: false, over: false, help: false,
+      t: 0, st, flags: {}, history: [], busy: null, paused: true, started: false, over: false, help: false,
       did(aid) { const h = this.history.find(x => x.id === aid); return h ? h.t : undefined; },
       count(aid) { return this.history.filter(x => x.id === aid).length; },
       since(aid) { const hs = this.history.filter(x => x.id === aid); return hs.length ? this.t - hs[hs.length - 1].t : Infinity; },
@@ -57,8 +57,9 @@
         <div class="sim-left">
           <div class="sim-intro card"><span class="eyebrow">${esc(sc.place)} · ${DIFF[sc.difficulty]} уровень</span><h1 style="font-size:clamp(20px,2.6vw,26px);margin:4px 0 8px">${esc(sc.title)}</h1><div class="stage-text">${sc.intro}</div></div>
           <div class="mon mon-sim">
-            <div class="mon-head"><span id="clock">0:00</span><span><button type="button" class="mon-btn" id="pause">Пауза</button></span></div>
+            <div class="mon-head"><span id="clock">0:00</span><span><button type="button" class="mon-btn" id="pause">Начать</button></span></div>
             <canvas id="simMon" aria-label="Монитор пациента"></canvas>
+            <button type="button" class="btn btn-primary mon-start" id="start">Начать — время пойдёт</button>
             <div class="mon-vitals">
               <div class="mv mv-hr" id="vHr"><small>ЧСС</small><b></b></div>
               <div class="mv mv-sp" id="vSp"><small>SpO₂ %</small><b></b></div>
@@ -127,6 +128,7 @@
 
     el.querySelector('#actions').addEventListener('click', e => {
       const b = e.target.closest('.act'); if (!b || sim.busy || sim.over) return;
+      if (!sim.started) start();
       const a = sc.actions.find(x => x.id === b.dataset.a);
       if (a.need === 'iv' && !sim.flags.iv && !sim.flags.io) { addLog('Нет венозного доступа — сначала установите катетер.', 'warn'); return; }
       const d = dur(a);
@@ -146,7 +148,8 @@
     // Главный цикл
     let last = 0, raf = 0, stable = 0, lastVitals = 0;
     function loop(ts) {
-      if (!document.body.contains(el.querySelector('#simMon'))) return;
+      // Своя канва, а не поиск по id: иначе после перехода в другой сценарий старый цикл продолжит идти.
+      if (!document.body.contains(canvas)) return;
       if (!last) last = ts;
       const real = Math.min(0.25, (ts - last) / 1000);
       last = ts;
@@ -227,7 +230,14 @@
     }
 
     const pauseBtn = el.querySelector('#pause');
-    const togglePause = () => { if (sim.over) return; sim.paused = !sim.paused; pauseBtn.textContent = sim.paused ? 'Продолжить' : 'Пауза'; el.querySelector('.sim').classList.toggle('paused', sim.paused); };
+    function start() {
+      sim.started = true; sim.paused = false;
+      pauseBtn.textContent = 'Пауза';
+      el.querySelector('#start').remove();
+      el.querySelector('.sim').classList.remove('paused');
+    }
+    el.querySelector('#start').addEventListener('click', start);
+    const togglePause = () => { if (sim.over) return; if (!sim.started) return start(); sim.paused = !sim.paused; pauseBtn.textContent = sim.paused ? 'Продолжить' : 'Пауза'; el.querySelector('.sim').classList.toggle('paused', sim.paused); };
     pauseBtn.addEventListener('click', togglePause);
     const onKey = e => {
       if (!document.body.contains(pauseBtn)) { document.removeEventListener('keydown', onKey); return; }
@@ -235,7 +245,9 @@
     };
     document.addEventListener('keydown', onKey);
 
+    el.querySelector('.sim').classList.add('paused');
     addLog(sc.start || 'Вы подходите к пациенту. Монитор подключён.', 'info');
+    addLog('Прочитайте вводную. Время пойдёт, когда нажмёте «Начать» или выберете первое действие.', 'info');
     renderActions();
     vitalsView();
     raf = requestAnimationFrame(loop);
