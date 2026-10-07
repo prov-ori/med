@@ -49,7 +49,7 @@
     const isNew = st.xp === 0;
     const rh = rhythmOfDay(S.today());
     const vit = vitalsFor(rh.id);
-    const trainers = ['ecg', 'labs', 'abg', 'anatomy', 'riddles', 'terms'].reduce((s, k) => s + S.trainer(k).correct, 0);
+    const trainers = ['ecg', 'labs', 'abg', 'anatomy', 'riddles', 'terms', 'myths', 'triage', 'pairs'].reduce((s, k) => s + S.trainer(k).correct, 0);
 
     el.innerHTML = `
       <section class="hero">
@@ -134,6 +134,9 @@
           <a class="tool" href="#/anatomy"><span class="tool-ico">${ICONS.body}</span><div><b>Анатомическая карта</b><span>Органы с латынью, функциями и болезнями. Режим «найди орган»</span></div></a>
           <a class="tool" href="#/riddles"><span class="tool-ico">${ICONS.magnifier}</span><div><b>Диагноз по подсказкам</b><span>Чем раньше догадаетесь, тем больше очков</span></div></a>
           <a class="tool" href="#/terms"><span class="tool-ico">${ICONS.puzzle}</span><div><b>Конструктор терминов</b><span>Соберите слово из греческих и латинских корней</span></div></a>
+          <a class="tool" href="#/triage"><span class="tool-ico">${ICONS.alert}</span><div><b>Сортировка в приёмном</b><span>${MED.triage.length} пациентов: кого смотреть первым, а кто подождёт</span></div></a>
+          <a class="tool" href="#/myths"><span class="tool-ico">${ICONS.bulb}</span><div><b>Миф или факт</b><span>${MED.myths.length} утверждений — от бабушкиных советов до мифов ординаторской</span></div></a>
+          <a class="tool" href="#/pairs"><span class="tool-ico">${ICONS.shuffle}</span><div><b>Пары</b><span>Яд — антидот, витамин — болезнь, микроб — инфекция</span></div></a>
           <a class="tool" href="#/cases"><span class="tool-ico">${ICONS.case}</span><div><b>Клинические случаи</b><span>Ведите пациента: решения, ошибки, разбор</span></div></a>
           <a class="tool" href="#/daily"><span class="tool-ico">${ICONS.bolt}</span><div><b>Вызов дня ${dailyDone ? '· выполнен' : ''}</b><span>6 вопросов, одинаковых для всех сегодня</span></div></a>
           <a class="tool" href="#/cards"><span class="tool-ico">${ICONS.cards}</span><div><b>Карточки</b><span>Интервальное повторение: термины, препараты, нормы</span></div></a>

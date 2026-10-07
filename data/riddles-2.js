@@ -1,0 +1,1 @@
+MED.riddles.push();

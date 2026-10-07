@@ -22,7 +22,7 @@
   const SRS_DAYS = [0, 1, 3, 7, 16, 35, 80];
   const DAY = 86400000;
   // Тренажёры с общей механикой «верно / неверно / серия».
-  const TRAINERS = ['ecg', 'labs', 'anatomy', 'terms', 'riddles', 'abg'];
+  const TRAINERS = ['ecg', 'labs', 'anatomy', 'terms', 'riddles', 'abg', 'myths', 'triage', 'pairs'];
 
   function defaults() {
     const tr = {};
@@ -222,6 +222,9 @@
     { id: 'anatomy-30', title: 'Топограф', desc: 'Найти 30 органов на анатомической карте', test: s => tr(s, 'anatomy').correct >= 30 },
     { id: 'terms-20', title: 'Латинист', desc: 'Собрать 20 терминов в конструкторе', test: s => tr(s, 'terms').correct >= 20 },
     { id: 'riddle-10', title: 'Доктор Хаус', desc: 'Разгадать 10 диагнозов по подсказкам', test: s => tr(s, 'riddles').correct >= 10 },
+    { id: 'myths-30', title: 'Разрушитель мифов', desc: 'Верно оценить 30 утверждений в игре «Миф или факт»', test: s => tr(s, 'myths').correct >= 30 },
+    { id: 'triage-run', title: 'Старший смены', desc: '5 пациентов подряд точно отсортировать в приёмном', test: s => tr(s, 'triage').best >= 5 },
+    { id: 'pairs-50', title: 'Ассоциации', desc: 'Найти 50 пар', test: s => tr(s, 'pairs').correct >= 50 },
     { id: 'cards-50', title: 'Зубрила', desc: 'Изучить 50 карточек', test: s => Object.keys(s.cards).length >= 50 },
     { id: 'cards-master', title: 'Долговременная память', desc: '25 карточек в коробке 4 и выше', test: s => Object.values(s.cards).filter(c => c.box >= 4).length >= 25 },
     { id: 'exam', title: 'Сессия', desc: 'Сдать пробный экзамен', test: s => s.exams.length >= 1 },

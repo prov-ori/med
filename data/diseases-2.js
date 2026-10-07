@@ -1,0 +1,1 @@
+MED.diseases.push();
