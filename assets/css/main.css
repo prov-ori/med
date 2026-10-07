@@ -808,9 +808,9 @@ tr:last-child td { border-bottom: 0; }
 .tr-btn.is-correct { border-color: var(--ink); box-shadow: 0 0 0 3px var(--ok); }
 .tr-btn.is-wrong { box-shadow: 0 0 0 3px var(--bad); }
 @media (max-width: 560px) { .triage-btns { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; } .tr-btn span { font-size: 10.5px; } .tr-btn small { display: none; } }
-.pairs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.pairs { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; margin-top: 12px; }
 .pairs-col { display: flex; flex-direction: column; gap: 8px; }
-.pair { text-align: left; font: inherit; font-size: 14.5px; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; min-height: 48px; transition: border-color .15s, background .15s; }
+.pair { overflow-wrap: anywhere; hyphens: auto; text-align: left; font: inherit; font-size: 14.5px; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; min-height: 48px; transition: border-color .15s, background .15s; }
 .pair:hover:not(:disabled) { border-color: var(--accent); }
 .pair.on { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 2px var(--accent); }
 .pair.is-correct { border-color: var(--ok); background: var(--ok-soft); color: var(--ink-3); cursor: default; }
@@ -818,3 +818,6 @@ tr:last-child td { border-bottom: 0; }
 .myth #fb:not(:empty), .triage-card #fb:not(:empty) { margin-top: 14px; }
 .myth-btn:disabled { opacity: .4; }
 .myth-btn.is-correct, .myth-btn.is-wrong { opacity: 1; }
+/* Длинные классы препаратов («Моноклональное антитело к ФНО-α…») должны переноситься, а не распирать страницу на телефоне */
+.tag { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+@media (max-width: 420px) { .pairs { gap: 6px; } .pair { font-size: 13px; padding: 9px 8px; } }
