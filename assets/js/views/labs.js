@@ -105,19 +105,27 @@
     for (;;) {
       const key = shuffle(Object.keys(TYPES))[0];
       const T = TYPES[key];
-      let hco3, pco2;
-      if (T.prim === 'mac') { hco3 = R(7, 17); pco2 = 1.5 * hco3 + 8 + R(-1.5, 1.5); }
+      let hco3, pco2, mix = null;
+      // Каждый третий метаболический ацидоз — смешанный: иначе шаг 4 всегда «компенсация адекватна» и его можно не читать.
+      if (T.prim === 'mac') {
+        hco3 = R(7, 17);
+        const r = Math.random();
+        mix = r < 0.17 ? 'rac' : r < 0.34 ? 'ralk' : null;
+        pco2 = 1.5 * hco3 + 8 + (mix === 'rac' ? R(5, 10) : mix === 'ralk' ? -R(5, 7) : R(-1.5, 1.5));
+        if (pco2 < 10) continue;
+      }
       if (T.prim === 'malk') { hco3 = R(31, 40); pco2 = 40 + 0.7 * (hco3 - 24) + R(-1.5, 1.5); }
       if (T.prim === 'rac') { pco2 = R(56, 80); hco3 = 24 + (T.chronic ? 0.38 : 0.1) * (pco2 - 40) + R(-0.6, 0.6); }
       if (T.prim === 'ralk') { pco2 = R(21, 31); hco3 = 24 - (T.chronic ? 0.5 : 0.2) * (40 - pco2) + R(-0.5, 0.5); }
       const ph = 6.1 + Math.log10(hco3 / (0.03 * pco2));
       if (ph >= 7.35 && ph <= 7.45) continue;
+      if (T.prim === 'mac' && ph >= 7.35) continue;
       const na = Math.round(R(134, 143));
       const ag = key === 'mac-hag' ? Math.round(R(20, 30)) : Math.round(R(8, 12));
       const cl = Math.round(na - hco3 - ag);
       const po2 = T.prim === 'rac' ? Math.round(R(52, 68)) : key === 'ralk-a' && T.ctx ? Math.round(R(68, 98)) : Math.round(R(82, 98));
       const be = 0.93 * (hco3 - 24.4 + 14.8 * (ph - 7.4));
-      return { key, T, ctx: shuffle(T.ctx)[0], ph, pco2, hco3, na, cl, ag, po2, be };
+      return { key, T, mix, ctx: shuffle(T.ctx)[0], ph, pco2, hco3, na, cl, ag, po2, be };
     }
   }
 
@@ -159,8 +167,12 @@
         });
         steps.push({
           q: `Шаг 4. Ожидаемый pCO₂ по Винтерсу — ${num(expW.toFixed(0))} ± 2. Фактический ${Math.round(g.pco2)}. Вывод?`,
-          options: ['Компенсация адекватна', 'Сопутствующий респираторный ацидоз', 'Сопутствующий респираторный алкалоз'], answer: 0,
-          explain: 'Фактический pCO₂ укладывается в ожидаемый диапазон — дополнительного респираторного нарушения нет. Если бы pCO₂ был выше — значит, пациент устаёт и не может компенсировать: сигнал к респираторной поддержке.'
+          options: ['Компенсация адекватна', 'Сопутствующий респираторный ацидоз', 'Сопутствующий респираторный алкалоз'], answer: g.mix === 'rac' ? 1 : g.mix === 'ralk' ? 2 : 0,
+          explain: g.mix === 'rac'
+            ? 'Фактический pCO₂ выше ожидаемого: лёгкие не справляются с компенсацией. Пациент устаёт или угнетено дыхание (опиоиды, кома, слабость дыхательных мышц) — сигнал к респираторной поддержке.'
+            : g.mix === 'ralk'
+              ? 'Фактический pCO₂ ниже ожидаемого: гипервентиляция сильнее, чем нужно для компенсации. Классика — отравление салицилатами, сепсис, тромбоэмболия лёгочной артерии.'
+              : 'Фактический pCO₂ укладывается в ожидаемый диапазон — дополнительного респираторного нарушения нет. Если бы pCO₂ был выше — значит, пациент устаёт и не может компенсировать: сигнал к респираторной поддержке.'
         });
       } else if (g.T.prim === 'rac' || g.T.prim === 'ralk') {
         const d = Math.abs(g.pco2 - 40) / 10;
@@ -191,6 +203,7 @@ Cl⁻     ${g.cl}      ммоль/л</pre>
       const box = slot.querySelector('#steps');
       let i = 0, allOk = true;
       function step() {
+        if (!document.body.contains(box)) return; // ушли со страницы, пока шла пауза
         if (i >= steps.length) {
           run = allOk ? run + 1 : 0;
           S.recordTrainer('abg', allOk, run);
@@ -200,7 +213,7 @@ Cl⁻     ${g.cl}      ммоль/л</pre>
             g.T.prim === 'malk' ? 'Метаболический алкалоз' : `${g.T.chronic ? 'Хронический' : 'Острый'} ${PRIM[g.T.prim].toLowerCase()}`;
           const d = document.createElement('div');
           d.className = 'card result';
-          d.innerHTML = `<div class="result-body"><span class="eyebrow">${allOk ? 'Всё верно' : 'Есть ошибки'}</span><h3>${diag}, компенсация адекватна</h3></div><button type="button" class="btn btn-primary">Новый анализ ${ICONS.arrow}</button>`;
+          d.innerHTML = `<div class="result-body"><span class="eyebrow">${allOk ? 'Всё верно' : 'Есть ошибки'}</span><h3>${diag}${g.mix === 'rac' ? ' + респираторный ацидоз' : g.mix === 'ralk' ? ' + респираторный алкалоз' : g.T.prim === 'mac' ? ', компенсация адекватна' : ''}</h3></div><button type="button" class="btn btn-primary">Новый анализ ${ICONS.arrow}</button>`;
           d.querySelector('button').addEventListener('click', () => { next(); window.scrollTo(0, 0); });
           box.appendChild(d);
           return;
